@@ -1,5 +1,5 @@
 services:
-  postgres:
+  points_bd_service:
     build:
       context: ./database
       dockerfile: Dockerfile
@@ -23,7 +23,7 @@ services:
     networks:
       - todo_network
 
-  api:
+  smart_api:
     build:
       context: ./smart_api
       dockerfile: Dockerfile
@@ -39,7 +39,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      postgres:
+      points_bd_service:
         condition: service_healthy
     volumes:
       - ./smart_api/src:/app/src
