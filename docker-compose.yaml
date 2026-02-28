@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: smart_logistics_postgres
+    env_file:
+      - .env.example
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-points_bd}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123456}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - smart_logistics_network
+
+  smart_api:
+    build: ./smart_api
+    container_name: smart_logistics_api
+    env_file:
+      - .env.example
+    environment:
+      POSTGRES_HOST: postgres
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${PORT:-3001}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:3001}
+    ports:
+      - "${PORT:-3001}:${PORT:-3001}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - smart_logistics_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  smart_logistics_network:
+    driver: bridge
