@@ -1,7 +1,7 @@
 import { Express, Router, Request, Response } from "express";
 import { UploadController } from "../controllers/network/Upload.controller";
 import { validateRequest } from "../middlewares/valid_request.middleware";
-import { GraphSchema } from "../../application/shared/models/entities/Node.entity";
+import { GraphSchema } from "../../application/shared/models/entities/Graph.entity";
 
 export const NetworkRoute = (app: Express) => {
     const router = Router();
