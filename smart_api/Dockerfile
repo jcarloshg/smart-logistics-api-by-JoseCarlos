@@ -8,6 +8,7 @@ RUN npm ci --include=dev
 
 COPY . .
 
-EXPOSE 3000
+ARG PORT=3001
+EXPOSE ${PORT}
 
 CMD ["npm", "run", "dev"]

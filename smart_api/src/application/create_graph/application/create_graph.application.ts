@@ -10,6 +10,7 @@ export class CreateGraphApplication {
 
     public async execute(graph: GraphType): Promise<CreateGraphAppResponse> {
         try {
+            console.log(`graph: `, graph);
             const node = await this.graphRepository.create(graph);
             return {
                 wasSucces: true,

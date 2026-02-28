@@ -1,26 +1,28 @@
-### Smart Logistics API - Network Routes Testing
-### Base URL: http://localhost:3000
+
+### ============================================
+### VARIABLES
+### ============================================
+### Change @baseUrl to match your environment:
+### - Local development: http://localhost:3001
+### - Docker development: http://localhost:3001
+### - Production: https://api.yourdomain.com
+@baseUrl = http://localhost:3001
 
 ### ============================================
 ### 1. HEALTH CHECKS
 ### ============================================
 
 ### Root endpoint - API Welcome
-GET http://localhost:3000/
-
-###
-
-### Network service health check
-GET http://localhost:3000/network/health
+GET {{baseUrl}}/
 
 ###
 
 ### ============================================
-### 2. GRAPH UPLOAD (Planned)
+### 2. GRAPH UPLOAD - SUCCESS CASES
 ### ============================================
 
-### Upload a graph with edges
-POST http://localhost:3000/network/upload
+### Upload a valid graph with multiple edges
+POST {{baseUrl}}/network/upload
 Content-Type: application/json
 
 {
@@ -41,36 +43,24 @@ Content-Type: application/json
 
 ###
 
-### ============================================
-### 3. GET NODES FROM GRAPH (Planned)
-### ============================================
-
-### Get all nodes from a graph
-GET http://localhost:3000/network/nodes/graph-id-1
-
-###
-
-### ============================================
-### 4. ROUTE OPTIMIZATION (Planned)
-### ============================================
-
-### Calculate optimal route using Dijkstra's Algorithm
-POST http://localhost:3000/route/optimize/graph-id-1
+### Upload a simple graph with single edge
+POST {{baseUrl}}/network/upload
 Content-Type: application/json
 
 {
-  "originNodeId": "A",
-  "destinationNodeId": "H"
+  "edges": [
+    { "from": "X", "to": "Y", "cost": 25 }
+  ]
 }
 
 ###
 
 ### ============================================
-### 5. INVALID REQUESTS - ERROR HANDLING
+### 3. ERROR HANDLING - VALIDATION TESTS
 ### ============================================
 
-### Invalid graph - missing 'from' field
-POST http://localhost:3000/network/upload
+### Error: Invalid graph - missing 'from' field
+POST {{baseUrl}}/network/upload
 Content-Type: application/json
 
 {
@@ -81,8 +71,32 @@ Content-Type: application/json
 
 ###
 
-### Invalid graph - negative cost
-POST http://localhost:3000/network/upload
+### Error: Invalid graph - missing 'to' field
+POST {{baseUrl}}/network/upload
+Content-Type: application/json
+
+{
+  "edges": [
+    { "from": "A", "cost": 10 }
+  ]
+}
+
+###
+
+### Error: Invalid graph - missing 'cost' field
+POST {{baseUrl}}/network/upload
+Content-Type: application/json
+
+{
+  "edges": [
+    { "from": "A", "to": "B" }
+  ]
+}
+
+###
+
+### Error: Invalid graph - negative cost
+POST {{baseUrl}}/network/upload
 Content-Type: application/json
 
 {
@@ -93,8 +107,20 @@ Content-Type: application/json
 
 ###
 
-### Invalid graph - empty edges array
-POST http://localhost:3000/network/upload
+### Error: Invalid graph - zero cost
+POST {{baseUrl}}/network/upload
+Content-Type: application/json
+
+{
+  "edges": [
+    { "from": "A", "to": "B", "cost": 0 }
+  ]
+}
+
+###
+
+### Error: Invalid graph - empty edges array
+POST {{baseUrl}}/network/upload
 Content-Type: application/json
 
 {
@@ -103,11 +129,45 @@ Content-Type: application/json
 
 ###
 
+### Error: Invalid graph - empty node names
+POST {{baseUrl}}/network/upload
+Content-Type: application/json
+
+{
+  "edges": [
+    { "from": "", "to": "B", "cost": 10 }
+  ]
+}
+
+###
+
 ### ============================================
-### 6. DOCUMENTATION (Planned)
+### 4. PLANNED ENDPOINTS (Future Implementation)
 ### ============================================
 
-### Get Swagger API documentation
-GET http://localhost:3000/docs
+### Get all graphs
+GET {{baseUrl}}/network/graphs
+
+###
+
+### Get graph by ID
+GET {{baseUrl}}/network/graphs/{graphId}
+
+###
+
+### Delete graph by ID
+DELETE {{baseUrl}}/network/graphs/{graphId}
+
+###
+
+### Calculate optimal route using Dijkstra's Algorithm
+POST {{baseUrl}}/network/route/optimize
+Content-Type: application/json
+
+{
+  "graphId": "{graphId}",
+  "origin": "A",
+  "destination": "H"
+}
 
 ###
