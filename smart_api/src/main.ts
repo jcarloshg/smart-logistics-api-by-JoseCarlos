@@ -1,5 +1,6 @@
 import express from 'express';
-import { NetworkRoute } from './presentation/routes/network.route';
+import { NetworkRoute } from '@/presentation/routes/network.route';
+import { RouteRoute } from '@/presentation/routes/route.route';
 import { connectDatabase } from '@/application/shared/infrastructure/postgresql';
 import { ENVIROMENT_VARIABLES } from '@/application/shared/infrastructure/EnviromentVariables';
 
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
 // Routes
 // ─────────────────────────────────────
 NetworkRoute(app);
+RouteRoute(app);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Smart Logistics API' });
