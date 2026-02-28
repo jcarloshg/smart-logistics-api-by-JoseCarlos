@@ -9,11 +9,21 @@ export class CreateGraphApplication {
     }
 
     public async execute(graph: GraphType): Promise<CreateGraphAppResponse> {
-        const node = await this.graphRepository.create(graph);
-        return {
-            message: 'Graph created successfully',
-            data: node
-        };
+        try {
+            const node = await this.graphRepository.create(graph);
+            return {
+                wasSucces: true,
+                message: 'Graph created successfully',
+                data: node
+            };
+        } catch (error) {
+            console.error('Error creating graph:', error);
+            return {
+                wasSucces: false,
+                message: 'Failed to create graph',
+                data: null
+            };
+        }
     }
 }
 
@@ -21,6 +31,7 @@ export class CreateGraphApplication {
 
 
 export interface CreateGraphAppResponse {
+    wasSucces: boolean;
     message: string;
     data?: any;
 }
