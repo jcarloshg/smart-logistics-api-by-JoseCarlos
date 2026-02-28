@@ -56,7 +56,27 @@ Content-Type: application/json
 ###
 
 ### ============================================
-### 3. ERROR HANDLING - VALIDATION TESTS
+### 3. READ GRAPH - GET NODES
+### ============================================
+
+### Get graph by ID (success case)
+### Note: Replace {graphId} with actual UUID from upload response
+GET {{baseUrl}}/network/nodes/{graphId}
+
+###
+
+### Get graph with invalid ID (not found)
+GET {{baseUrl}}/network/nodes/00000000-0000-0000-0000-000000000000
+
+###
+
+### Get graph with empty ID (bad request)
+GET {{baseUrl}}/network/nodes/
+
+###
+
+### ============================================
+### 4. ERROR HANDLING - VALIDATION TESTS
 ### ============================================
 
 ### Error: Invalid graph - missing 'from' field
@@ -142,16 +162,11 @@ Content-Type: application/json
 ###
 
 ### ============================================
-### 4. PLANNED ENDPOINTS (Future Implementation)
+### 5. PLANNED ENDPOINTS (Future Implementation)
 ### ============================================
 
 ### Get all graphs
 GET {{baseUrl}}/network/graphs
-
-###
-
-### Get graph by ID
-GET {{baseUrl}}/network/graphs/{graphId}
 
 ###
 
