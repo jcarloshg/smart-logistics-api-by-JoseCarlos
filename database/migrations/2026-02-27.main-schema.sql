@@ -1,7 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Create graph table
-CREATE TABLE IF NOT EXISTS node (
+CREATE TABLE IF NOT EXISTS graph (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
     graph JSON NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
