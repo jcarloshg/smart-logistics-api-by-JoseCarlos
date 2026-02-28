@@ -1,0 +1,113 @@
+### Smart Logistics API - Network Routes Testing
+### Base URL: http://localhost:3000
+
+### ============================================
+### 1. HEALTH CHECKS
+### ============================================
+
+### Root endpoint - API Welcome
+GET http://localhost:3000/
+
+###
+
+### Network service health check
+GET http://localhost:3000/network/health
+
+###
+
+### ============================================
+### 2. GRAPH UPLOAD (Planned)
+### ============================================
+
+### Upload a graph with edges
+POST http://localhost:3000/network/upload
+Content-Type: application/json
+
+{
+  "edgesaas": [
+    { "from": "A", "to": "B", "cost": 10 },
+    { "from": "A", "to": "C", "cost": 5 },
+    { "from": "B", "to": "D", "cost": 8 },
+    { "from": "C", "to": "D", "cost": 12 },
+    { "from": "D", "to": "E", "cost": 12 },
+    { "from": "D", "to": "F", "cost": 4 },
+    { "from": "F", "to": "G", "cost": 4 },
+    { "from": "E", "to": "G", "cost": 9 },
+    { "from": "C", "to": "H", "cost": 8 },
+    { "from": "D", "to": "H", "cost": 4 },
+    { "from": "F", "to": "H", "cost": 1 }
+  ]
+}
+
+###
+
+### ============================================
+### 3. GET NODES FROM GRAPH (Planned)
+### ============================================
+
+### Get all nodes from a graph
+GET http://localhost:3000/network/nodes/graph-id-1
+
+###
+
+### ============================================
+### 4. ROUTE OPTIMIZATION (Planned)
+### ============================================
+
+### Calculate optimal route using Dijkstra's Algorithm
+POST http://localhost:3000/route/optimize/graph-id-1
+Content-Type: application/json
+
+{
+  "originNodeId": "A",
+  "destinationNodeId": "H"
+}
+
+###
+
+### ============================================
+### 5. INVALID REQUESTS - ERROR HANDLING
+### ============================================
+
+### Invalid graph - missing 'from' field
+POST http://localhost:3000/network/upload
+Content-Type: application/json
+
+{
+  "edges": [
+    { "to": "B", "cost": 10 }
+  ]
+}
+
+###
+
+### Invalid graph - negative cost
+POST http://localhost:3000/network/upload
+Content-Type: application/json
+
+{
+  "edges": [
+    { "from": "A", "to": "B", "cost": -5 }
+  ]
+}
+
+###
+
+### Invalid graph - empty edges array
+POST http://localhost:3000/network/upload
+Content-Type: application/json
+
+{
+  "edges": []
+}
+
+###
+
+### ============================================
+### 6. DOCUMENTATION (Planned)
+### ============================================
+
+### Get Swagger API documentation
+GET http://localhost:3000/docs
+
+###

@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { ZodType } from 'zod';
+import { ZodError, ZodType } from 'zod';
+
+import { FactoryResponses } from '@/application/shared/models/entities/FactoryResponses';
 
 export function validateRequest(schema: ZodType) {
   return (req: Request, res: Response, next: NextFunction): void => {
@@ -8,18 +10,7 @@ export function validateRequest(schema: ZodType) {
       req.body = validated;
       next();
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        res.status(400).json({
-          status: 'error',
-          message: 'Validation failed',
-          details: error.message,
-        });
-      } else {
-        res.status(400).json({
-          status: 'error',
-          message: 'Validation failed',
-        });
-      }
+      FactoryResponses.badRequest(res);
     }
   };
 }
