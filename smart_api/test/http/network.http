@@ -7,6 +7,8 @@
 ### - Docker development: http://localhost:3001
 ### - Production: https://api.yourdomain.com
 @baseUrl = http://localhost:3001
+@graphId=b61765b3-c26c-4950-97b0-6c4ed96ef669,
+
 
 ### ============================================
 ### 1. HEALTH CHECKS
@@ -61,7 +63,8 @@ Content-Type: application/json
 
 ### Get graph by ID (success case)
 ### Note: Replace {graphId} with actual UUID from upload response
-GET {{baseUrl}}/network/nodes/{graphId}
+GET {{baseUrl}}/network/nodes/b61765b3-c26c-4950-97b0-6c4ed96ef669
+
 
 ###
 
