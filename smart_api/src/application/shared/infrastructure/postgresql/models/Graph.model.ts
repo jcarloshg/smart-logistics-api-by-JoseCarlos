@@ -1,23 +1,23 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config';
 
-export interface NodeAttributes {
+export interface GraphAttributes {
     id: string;
     graph: any;
     created_at?: Date;
     updated_at?: Date;
 }
 
-export interface NodeCreationAttributes extends Optional<NodeAttributes, 'id' | 'created_at' | 'updated_at'> {}
+export interface GraphCreationAttributes extends Optional<GraphAttributes, 'id' | 'created_at' | 'updated_at'> {}
 
-export class Node extends Model<NodeAttributes, NodeCreationAttributes> implements NodeAttributes {
+export class Graph extends Model<GraphAttributes, GraphCreationAttributes> implements GraphAttributes {
     public id!: string;
     public graph!: any;
     public created_at?: Date;
     public updated_at?: Date;
 }
 
-Node.init(
+Graph.init(
     {
         id: {
             type: DataTypes.UUID,
@@ -46,4 +46,4 @@ Node.init(
     }
 );
 
-export default Node;
+export default Graph;
