@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ZodError, ZodType } from 'zod';
+import { ZodType } from 'zod';
 
 import { FactoryResponses } from '@/application/shared/models/entities/FactoryResponses';
 

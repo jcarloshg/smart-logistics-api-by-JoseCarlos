@@ -52,4 +52,36 @@ export class FactoryResponses {
         });
     }
 
+    // ─────────────────────────────────────
+    // CODE 5xx http
+    // ─────────────────────────────────────
+
+    static internalServerError(res: Response, message: string = 'Internal Server Error', data: any = undefined) {
+        res.status(500).json({
+            message,
+            data
+        });
+    }
+
+    static notImplemented(res: Response, message: string = 'Not Implemented', data: any = undefined) {
+        res.status(501).json({
+            message,
+            data
+        });
+    }
+
+    static badGateway(res: Response, message: string = 'Bad Gateway', data: any = undefined) {
+        res.status(502).json({
+            message,
+            data
+        });
+    }
+
+    static serviceUnavailable(res: Response, message: string = 'Service Unavailable', data: any = undefined) {
+        res.status(503).json({
+            message,
+            data
+        });
+    }
+
 }

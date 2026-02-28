@@ -24,7 +24,7 @@ POST http://localhost:3000/network/upload
 Content-Type: application/json
 
 {
-  "edgesaas": [
+  "edges": [
     { "from": "A", "to": "B", "cost": 10 },
     { "from": "A", "to": "C", "cost": 5 },
     { "from": "B", "to": "D", "cost": 8 },
