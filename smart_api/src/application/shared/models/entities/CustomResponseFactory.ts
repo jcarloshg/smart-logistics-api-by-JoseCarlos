@@ -1,8 +1,4 @@
-export interface CustomResponse {
-    statusCode: number;
-    message: string;
-    data?: any;
-}
+import { CustomResponse } from './CustomResponse';
 
 export class CustomResponseFactory {
     static ok(message: string = 'Success', data?: any): CustomResponse {
