@@ -137,11 +137,11 @@ Here is the updated section to insert into the **Submission Checklist** of the `
 
 A successful submission should include:
 
-- [ ] Complete source code for the REST API.
-- [ ] A working implementation of **Dijkstra's Algorithm** within a service layer.
-- [ ] Clear **TypeScript Interfaces** for `Node`, `Edge`, and the various Request DTOs.
-- [ ] Unit tests using **Jest** for the core routing algorithm (i.e., testing the function that calculates the path directly).
-- [ ] Proof that the Swagger documentation is accessible and accurately reflects all endpoints and data schemas.
+- [x] Complete source code for the REST API.
+- [x] A working implementation of **Dijkstra's Algorithm** within a service layer.
+- [x] Clear **TypeScript Interfaces** for `Node`, `Edge`, and the various Request DTOs.
+- [x] Unit tests using **Jest** for the core routing algorithm (i.e., testing the function that calculates the path directly).
+- [x] Proof that the Swagger documentation is accessible and accurately reflects all endpoints and data schemas.
 
 ### 💻 Submission Workflow
 
