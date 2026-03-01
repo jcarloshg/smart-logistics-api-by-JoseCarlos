@@ -51,28 +51,26 @@ export const NetworkRoute = (app: Express) => {
      *             edges:
      *               - from: "A"
      *                 to: "B"
-     *                 cost: 10
+     *                 distance: 10
+     *                 time: 15
+     *                 type: "road"
      *               - from: "B"
      *                 to: "C"
-     *                 cost: 15
+     *                 distance: 5
+     *                 time: 8
+     *                 type: "highway"
      *               - from: "A"
      *                 to: "C"
-     *                 cost: 30
+     *                 distance: 20
+     *                 time: 30
+     *                 type: "street"
      *     responses:
      *       201:
      *         description: Graph created successfully
      *         content:
      *           application/json:
      *             schema:
-     *               type: object
-     *               properties:
-     *                 id:
-     *                   type: string
-     *                 message:
-     *                   type: string
-     *             example:
-     *               id: "abc123"
-     *               message: "Graph created successfully"
+     *               $ref: '#/components/schemas/CreateGraphResponse'
      *       400:
      *         description: Invalid request body
      *         content:
