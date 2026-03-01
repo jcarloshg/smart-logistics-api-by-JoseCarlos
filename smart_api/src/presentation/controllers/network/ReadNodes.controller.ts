@@ -27,6 +27,8 @@ export const ReadNodesController = async (req: Request, res: Response) => {
 
         if (result.wasSucces) {
             FactoryResponses.ok(res, result.message, result.data);
+        } else if (result.message === 'Graph not found') {
+            FactoryResponses.notFound(res, result.message, result.data);
         } else {
             FactoryResponses.badRequest(res, result.message, result.data);
         }

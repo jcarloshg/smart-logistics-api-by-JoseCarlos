@@ -1,8 +1,10 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { NetworkRoute } from '@/presentation/routes/network.route';
 import { RouteRoute } from '@/presentation/routes/route.route';
 import { connectDatabase } from '@/application/shared/infrastructure/postgresql';
 import { ENVIROMENT_VARIABLES } from '@/application/shared/infrastructure/EnviromentVariables';
+import { swaggerSpec } from '@/presentation/swagger';
 
 const app = express();
 const PORT = parseInt(ENVIROMENT_VARIABLES.PORT);
@@ -35,6 +37,12 @@ app.use((req, res, next) => {
 // ─────────────────────────────────────
 // Routes
 // ─────────────────────────────────────
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/docs.json', (_: express.Request, res: express.Response) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
 NetworkRoute(app);
 RouteRoute(app);
 
