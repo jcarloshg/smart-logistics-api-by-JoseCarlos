@@ -1,18 +1,13 @@
 export default {
-    preset: 'ts-jest/presets/default-esm',
+    preset: 'ts-jest',
     testEnvironment: 'node',
-    extensionsToTreatAsEsm: ['.ts'],
     moduleNameMapper: {
-        '^(\\.{1,2}/.*)\\.js$': '$1',
+        '^@/(.*?)$': '<rootDir>/src/$1',
     },
     transform: {
-        '^.+\\.tsx?$': [
-            'ts-jest',
-            {
-                useESM: true,
-                tsconfig: 'tsconfig.test.json',
-            },
-        ],
+        '^.+\\.tsx?$': ['ts-jest', { 
+            tsconfig: 'tsconfig.test.json',
+        }],
     },
     testMatch: ['**/test/**/*.test.ts'],
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],

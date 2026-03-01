@@ -3,7 +3,11 @@
   "compilerOptions": {
     "rootDir": ".",
     "noEmit": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "moduleResolution": "node"
   },
   "include": ["src/**/*", "test/**/*"]
 }

@@ -1,4 +1,4 @@
-import { DijkstraAlgorithm, Graph, Edge } from '../../../../../../src/application/optimize_route/models/DijkstraAlgorithm';
+import { DijkstraAlgorithm, Graph, Edge } from '@/application/optimize_route/models/DijkstraAlgorithm';
 
 describe('DijkstraAlgorithm', () => {
     let dijkstra: DijkstraAlgorithm;
