@@ -1,5 +1,7 @@
 import { GraphRepository } from "@/application/shared/models/repositories/Graph.repository";
 import { DijkstraAlgorithm } from "../models/DijkstraAlgorithm";
+import { OptimizeRouteSchema } from "../models/optimize_route_request.entity";
+import { CustomResponseFactory } from "@/application/shared/models/entities/CustomResponseFactory";
 
 export class OptimizeRouteApplication {
     private graphRepository: GraphRepository;
@@ -10,76 +12,53 @@ export class OptimizeRouteApplication {
         this.dijkstra = new DijkstraAlgorithm();
     }
 
-    public async execute(
-        graphId: string,
-        origin: string,
-        destination: string,
-    ): Promise<OptimizeRouteAppResponse> {
+    public async execute(graphId: string, body: any): Promise<any> {
         try {
-            console.log(
-                `Optimizing route from ${origin} to ${destination} in graph ${graphId}`,
-            );
-
-            if (!origin || !destination) {
-                return {
-                    wasSucces: false,
-                    message: "Origin and destination nodes are required",
-                    data: null,
-                };
+            // ─────────────────────────────────────
+            // validate body
+            // ─────────────────────────────────────
+            const validation = OptimizeRouteSchema.safeParse(body);
+            if (!validation.success) {
+                const errors = validation.error.issues.map((e) => ({ field: e.path.join('.'), message: e.message }));
+                return CustomResponseFactory.badRequest("Validation failed", errors);
             }
 
-            if (origin === destination) {
-                return {
-                    wasSucces: false,
-                    message: "Origin and destination must be different",
-                    data: null,
-                };
+            const { originNodeId, destinationNodeId } = validation.data;
+
+            // ─────────────────────────────────────
+            // validate business rules
+            // ─────────────────────────────────────
+            if (originNodeId === destinationNodeId) {
+                return CustomResponseFactory.badRequest("Origin and destination must be different");
             }
 
+            // ─────────────────────────────────────
+            // execute use case
+            // ─────────────────────────────────────
+
+            // find graph
             const graph = await this.graphRepository.readById(graphId);
-
             if (!graph) {
-                return {
-                    wasSucces: false,
-                    message: "Graph not found",
-                    data: null,
-                };
+                return CustomResponseFactory.notFound("Graph not found");
             }
 
-            const result = this.dijkstra.execute(graph.graph, origin, destination);
+            // execute dijkstra
+            const result = this.dijkstra.execute(graph.graph, originNodeId, destinationNodeId);
 
             if (!result.path || result.path.length === 0) {
-                return {
-                    wasSucces: false,
-                    message: `No route found from ${origin} to ${destination}`,
-                    data: null,
-                };
+                return CustomResponseFactory.notFound(`No route found from ${originNodeId} to ${destinationNodeId}`);
             }
 
-            return {
-                wasSucces: true,
-                message: "Route optimized successfully",
-                data: {
-                    graphId: graphId,
-                    origin: origin,
-                    destination: destination,
-                    path: result.path,
-                    totalCost: result.totalCost,
-                },
-            };
+            return CustomResponseFactory.ok("Route optimized successfully", {
+                graphId: graphId,
+                origin: originNodeId,
+                destination: destinationNodeId,
+                path: result.path,
+                totalCost: result.totalCost,
+            });
         } catch (error) {
             console.error("Error optimizing route:", error);
-            return {
-                wasSucces: false,
-                message: "Failed to optimize route",
-                data: null,
-            };
+            return CustomResponseFactory.internalServerError("Failed to optimize route");
         }
     }
-}
-
-export interface OptimizeRouteAppResponse {
-    wasSucces: boolean;
-    message: string;
-    data?: any;
 }
