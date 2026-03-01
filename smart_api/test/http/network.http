@@ -7,7 +7,7 @@
 ### - Docker development: http://localhost:3001
 ### - Production: https://api.yourdomain.com
 @baseUrl = http://localhost:3001
-@graphId=94de643a-13da-4f8d-ae5d-8b03d68f7a58
+@graphId=9b198af5-831b-4e86-8fb7-72e49198f84d
 
 
 ### ============================================
@@ -79,6 +79,23 @@ Content-Type: application/json
 
 ###
 
+### Upload a graph with highway types for constraint testing
+POST {{baseUrl}}/network/upload
+Content-Type: application/json
+
+{
+  "edges": [
+    { "from": "A", "to": "B", "distance": 10, "time": 5, "type": "highway" },
+    { "from": "A", "to": "C", "distance": 20, "time": 15, "type": "road" },
+    { "from": "B", "to": "D", "distance": 10, "time": 5, "type": "highway" },
+    { "from": "C", "to": "D", "distance": 25, "time": 20, "type": "road" },
+    { "from": "D", "to": "E", "distance": 10, "time": 5, "type": "highway" },
+    { "from": "C", "to": "E", "distance": 30, "time": 25, "type": "street" }
+  ]
+}
+
+###
+
 
 ### ============================================
 ### 3. READ GRAPH - GET NODES
@@ -86,7 +103,7 @@ Content-Type: application/json
 
 ### Get graph by ID (success case)
 ### Note: Replace {graphId} with actual UUID from upload response
-GET {{baseUrl}}/network/nodes/{{graphId}}
+GET {{baseUrl}}/network/nodes/8271288b-52ee-449c-9e12-aaef821b752c
 
 
 ###
@@ -314,6 +331,104 @@ Content-Type: application/json
 {
   "originNodeId": "A",
   "destinationNodeId": "Z"
+}
+
+###
+
+
+### ============================================
+### 6. CONSTRAINT FILTERING - AVOID HIGHWAYS
+### ============================================
+@highwayGraphId=17eab985-9393-407f-a7b5-e052d2272830
+
+### Upload a graph with highway edges for constraint testing
+### Note: Use the graph ID returned from the previous upload with highways
+POST {{baseUrl}}/network/upload
+Content-Type: application/json
+
+{
+  "edges": [
+    { "from": "A", "to": "B", "distance": 10, "time": 5, "type": "highway" },
+    { "from": "A", "to": "C", "distance": 20, "time": 15, "type": "road" },
+    { "from": "B", "to": "D", "distance": 10, "time": 5, "type": "highway" },
+    { "from": "C", "to": "D", "distance": 25, "time": 20, "type": "road" },
+    { "from": "D", "to": "E", "distance": 10, "time": 5, "type": "highway" },
+    { "from": "C", "to": "E", "distance": 30, "time": 25, "type": "street" }
+  ]
+}
+
+###
+
+### Route without constraints - uses highway (shorter distance: A->B->D->E = 30)
+### Replace {{highwayGraphId}} with the ID from the previous response
+POST {{baseUrl}}/route/optimize/{{highwayGraphId}}
+Content-Type: application/json
+
+{
+  "originNodeId": "A",
+  "destinationNodeId": "E",
+  "preference": "shortest"
+}
+
+###
+
+### Route with avoidHighways=true - avoids highways (longer distance: A->C->D->C->E = 75)
+POST {{baseUrl}}/route/optimize/{{highwayGraphId}}
+Content-Type: application/json
+
+{
+  "originNodeId": "A",
+  "destinationNodeId": "E",
+  "preference": "shortest",
+  "constraints": {
+    "avoidHighways": true
+  }
+}
+
+###
+
+### Route with avoidHighways=false - uses highways (default behavior)
+POST {{baseUrl}}/route/optimize/{{highwayGraphId}}
+Content-Type: application/json
+
+{
+  "originNodeId": "A",
+  "destinationNodeId": "E",
+  "preference": "shortest",
+  "constraints": {
+    "avoidHighways": false
+  }
+}
+
+###
+
+### Route with avoidHighways and fastest preference - avoids highways
+POST {{baseUrl}}/route/optimize/{{highwayGraphId}}
+Content-Type: application/json
+
+{
+  "originNodeId": "A",
+  "destinationNodeId": "E",
+  "preference": "fastest",
+  "constraints": {
+    "avoidHighways": true
+  }
+}
+
+###
+
+### Error: No route possible when avoiding highways (if all paths blocked)
+### This tests when constraints make the destination unreachable
+POST {{baseUrl}}/route/optimize/{{highwayGraphId}}
+Content-Type: application/json
+
+{
+  "originNodeId": "A",
+  "destinationNodeId": "E",
+  "preference": "shortest",
+  "constraints": {
+    "avoidHighways": true
+  }
 }
 
 ###
