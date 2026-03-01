@@ -165,6 +165,54 @@ Content-Type: application/json
 ###
 
 ### ============================================
+### 4. ROUTE OPTIMIZATION - DIJKSTRA'S ALGORITHM
+### ============================================
+
+### Calculate optimal route (success case)
+### Returns: path array and total cost
+POST {{baseUrl}}/route/optimize/{{graphId}}
+Content-Type: application/json
+
+{
+  "origin": "A",
+  "destination": "H"
+}
+
+###
+
+### Error: Route optimization - missing destination
+POST {{baseUrl}}/route/optimize/{{graphId}}
+Content-Type: application/json
+
+{
+  "origin": "A"
+}
+
+###
+
+### Error: Route optimization - same origin and destination
+POST {{baseUrl}}/route/optimize/{{graphId}}
+Content-Type: application/json
+
+{
+  "origin": "A",
+  "destination": "A"
+}
+
+###
+
+### Error: Route optimization - graph not found
+POST {{baseUrl}}/route/optimize/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{
+  "origin": "A",
+  "destination": "H"
+}
+
+###
+
+### ============================================
 ### 5. PLANNED ENDPOINTS (Future Implementation)
 ### ============================================
 
@@ -175,17 +223,5 @@ GET {{baseUrl}}/network/graphs
 
 ### Delete graph by ID
 DELETE {{baseUrl}}/network/graphs/{graphId}
-
-###
-
-### Calculate optimal route using Dijkstra's Algorithm
-POST {{baseUrl}}/network/route/optimize
-Content-Type: application/json
-
-{
-  "graphId": "{graphId}",
-  "origin": "A",
-  "destination": "H"
-}
 
 ###
