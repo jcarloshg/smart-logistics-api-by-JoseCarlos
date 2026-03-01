@@ -1,7 +1,8 @@
-import { GraphRepository } from "@/application/shared/models/repositories/Graph.repository";
-import { DijkstraAlgorithm } from "../models/DijkstraAlgorithm";
-import { OptimizeRouteSchema } from "../models/optimize_route_request.entity";
-import { CustomResponseFactory } from "@/application/shared/models/entities/CustomResponseFactory";
+import { DijkstraAlgorithm } from "@/src/application/optimize_route/models/DijkstraAlgorithm";
+import { OptimizeRouteResponse } from "@/src/application/optimize_route/models/optimize_route.response.entity";
+import { OptimizeRouteSchema } from "@/src/application/optimize_route/models/optimize_route_request.entity";
+import { GraphRepository } from "@/src/application/shared/models/repositories/Graph.repository";
+import { CustomResponseFactory } from "@/src/application/shared/models/entities/CustomResponseFactory";
 
 export class OptimizeRouteApplication {
     private graphRepository: GraphRepository;
@@ -19,7 +20,10 @@ export class OptimizeRouteApplication {
             // ─────────────────────────────────────
             const validation = OptimizeRouteSchema.safeParse(body);
             if (!validation.success) {
-                const errors = validation.error.issues.map((e) => ({ field: e.path.join('.'), message: e.message }));
+                const errors = validation.error.issues.map((e) => ({
+                    field: e.path.join("."),
+                    message: e.message,
+                }));
                 return CustomResponseFactory.badRequest("Validation failed", errors);
             }
 
@@ -29,7 +33,9 @@ export class OptimizeRouteApplication {
             // validate business rules
             // ─────────────────────────────────────
             if (originNodeId === destinationNodeId) {
-                return CustomResponseFactory.badRequest("Origin and destination must be different");
+                return CustomResponseFactory.badRequest(
+                    "Origin and destination must be different",
+                );
             }
 
             // ─────────────────────────────────────
@@ -43,22 +49,33 @@ export class OptimizeRouteApplication {
             }
 
             // execute dijkstra
-            const result = this.dijkstra.execute(graph.graph, originNodeId, destinationNodeId);
+            const startTime = Date.now();
+            const result = this.dijkstra.execute(
+                graph.graph,
+                originNodeId,
+                destinationNodeId,
+            );
+            const durationMs = Date.now() - startTime;
 
             if (!result.path || result.path.length === 0) {
-                return CustomResponseFactory.notFound(`No route found from ${originNodeId} to ${destinationNodeId}`);
+                return CustomResponseFactory.notFound(
+                    `No route found from ${originNodeId} to ${destinationNodeId}`,
+                );
             }
 
-            return CustomResponseFactory.ok("Route optimized successfully", {
+            const response: OptimizeRouteResponse = {
                 graphId: graphId,
-                origin: originNodeId,
-                destination: destinationNodeId,
-                path: result.path,
                 totalCost: result.totalCost,
-            });
+                path: result.path,
+                durationMs: durationMs,
+            };
+
+            return CustomResponseFactory.ok("Route optimized successfully", response);
         } catch (error) {
             console.error("Error optimizing route:", error);
-            return CustomResponseFactory.internalServerError("Failed to optimize route");
+            return CustomResponseFactory.internalServerError(
+                "Failed to optimize route",
+            );
         }
     }
 }
