@@ -1,12 +1,21 @@
 export interface Edge {
     from: string;
     to: string;
-    cost: number;
+    distance: number;
+    time: number;
 }
 
 export interface Graph {
     edges: Edge[];
 }
+
+export type CostType = 'distance' | 'time';
+export type CostSelector = (edge: Edge) => number;
+
+export const COST_SELECTORS: Record<CostType, CostSelector> = {
+    distance: (edge: Edge) => edge.distance,
+    time: (edge: Edge) => edge.time,
+};
 
 export interface DijkstraResult {
     path: string[];
@@ -14,10 +23,10 @@ export interface DijkstraResult {
 }
 
 export class DijkstraAlgorithm {
-    public execute(graph: Graph, start: string, end: string): DijkstraResult {
+    public execute(graph: Graph, start: string, end: string, costSelector: CostSelector = COST_SELECTORS.distance): DijkstraResult {
         const { edges } = graph;
 
-        const adjacencyList = this.buildAdjacencyList(edges);
+        const adjacencyList = this.buildAdjacencyList(edges, costSelector);
         const allNodes = this.getAllNodes(edges);
 
         if (!allNodes.has(start) || !allNodes.has(end)) {
@@ -50,7 +59,7 @@ export class DijkstraAlgorithm {
         return { path, totalCost };
     }
 
-    private buildAdjacencyList(edges: Edge[]): Map<string, Array<{ node: string; cost: number }>> {
+    private buildAdjacencyList(edges: Edge[], costSelector: CostSelector): Map<string, Array<{ node: string; cost: number }>> {
         const adjacencyList = new Map<string, Array<{ node: string; cost: number }>>();
 
         edges.forEach((edge) => {
@@ -59,7 +68,7 @@ export class DijkstraAlgorithm {
             }
             adjacencyList.get(edge.from)!.push({
                 node: edge.to,
-                cost: edge.cost
+                cost: costSelector(edge)
             });
         });
 

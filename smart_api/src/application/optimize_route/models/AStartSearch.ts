@@ -1,12 +1,21 @@
 export interface Edge {
     from: string;
     to: string;
-    cost: number;
+    distance: number;
+    time: number;
 }
 
 export interface Graph {
     edges: Edge[];
 }
+
+export type CostType = 'distance' | 'time';
+export type CostSelector = (edge: Edge) => number;
+
+export const COST_SELECTORS: Record<CostType, CostSelector> = {
+    distance: (edge: Edge) => edge.distance,
+    time: (edge: Edge) => edge.time,
+};
 
 export interface AStarResult {
     path: string[];
@@ -19,15 +28,17 @@ export interface HeuristicFunction {
 
 export class AStarAlgorithm {
     private heuristic: HeuristicFunction;
+    private costSelector: CostSelector;
 
-    constructor(heuristic: HeuristicFunction = () => 0) {
+    constructor(heuristic: HeuristicFunction = () => 0, costSelector: CostSelector = COST_SELECTORS.distance) {
         this.heuristic = heuristic;
+        this.costSelector = costSelector;
     }
 
     public execute(graph: Graph, start: string, end: string): AStarResult {
         const { edges } = graph;
 
-        const adjacencyList = this.buildAdjacencyList(edges);
+        const adjacencyList = this.buildAdjacencyList(edges, this.costSelector);
         const allNodes = this.getAllNodes(edges);
 
         if (!allNodes.has(start) || !allNodes.has(end)) {
@@ -58,13 +69,13 @@ export class AStarAlgorithm {
             openSet.delete(current);
             closedSet.add(current);
 
-            this.updateNeighbors(current, adjacencyList, gScores, fScores, previous, openSet, closedSet, end);
+            this.updateNeighbors(current, adjacencyList, gScores, fScores, previous, openSet, closedSet);
         }
 
         return { path: [], totalCost: Infinity };
     }
 
-    private buildAdjacencyList(edges: Edge[]): Map<string, Array<{ node: string; cost: number }>> {
+    private buildAdjacencyList(edges: Edge[], costSelector: CostSelector): Map<string, Array<{ node: string; cost: number }>> {
         const adjacencyList = new Map<string, Array<{ node: string; cost: number }>>();
 
         edges.forEach((edge) => {
@@ -73,7 +84,7 @@ export class AStarAlgorithm {
             }
             adjacencyList.get(edge.from)!.push({
                 node: edge.to,
-                cost: edge.cost
+                cost: costSelector(edge)
             });
         });
 
@@ -127,8 +138,7 @@ export class AStarAlgorithm {
         fScores: Map<string, number>,
         previous: Map<string, string | null>,
         openSet: Set<string>,
-        closedSet: Set<string>,
-        end: string
+        closedSet: Set<string>
     ): void {
         const neighbors = adjacencyList.get(current) ?? [];
         const currentGScore = gScores.get(current) ?? Infinity;
