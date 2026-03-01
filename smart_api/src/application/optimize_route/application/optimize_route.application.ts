@@ -1,4 +1,4 @@
-import { DijkstraAlgorithm } from "@/src/application/optimize_route/models/DijkstraAlgorithm";
+import { DijkstraAlgorithm, COST_SELECTORS } from "@/src/application/optimize_route/models/DijkstraAlgorithm";
 import { OptimizeRouteResponse } from "@/src/application/optimize_route/models/optimize_route.response.entity";
 import { OptimizeRouteSchema } from "@/src/application/optimize_route/models/optimize_route_request.entity";
 import { GraphRepository } from "@/src/application/shared/models/repositories/Graph.repository";
@@ -27,7 +27,7 @@ export class OptimizeRouteApplication {
                 return CustomResponseFactory.badRequest("Validation failed", errors);
             }
 
-            const { originNodeId, destinationNodeId } = validation.data;
+            const { originNodeId, destinationNodeId, preference } = validation.data;
 
             // ─────────────────────────────────────
             // validate business rules
@@ -49,11 +49,13 @@ export class OptimizeRouteApplication {
             }
 
             // execute dijkstra
+            const costSelector = preference === 'shortest' ? COST_SELECTORS.distance : COST_SELECTORS.time;
             const startTime = Date.now();
             const result = this.dijkstra.execute(
                 graph.graph,
                 originNodeId,
                 destinationNodeId,
+                costSelector,
             );
             const durationMs = Date.now() - startTime;
 
@@ -68,6 +70,7 @@ export class OptimizeRouteApplication {
                 totalCost: result.totalCost,
                 path: result.path,
                 durationMs: durationMs,
+                preference: preference,
             };
 
             return CustomResponseFactory.ok("Route optimized successfully", response);
