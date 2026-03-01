@@ -7,7 +7,7 @@
 ### - Docker development: http://localhost:3001
 ### - Production: https://api.yourdomain.com
 @baseUrl = http://localhost:3001
-@graphId=d72f320c-24c3-4a81-8b45-005f0b8e2fce
+@graphId=94de643a-13da-4f8d-ae5d-8b03d68f7a58
 
 
 ### ============================================
@@ -19,27 +19,33 @@ GET {{baseUrl}}/
 
 ###
 
+### Health check
+GET {{baseUrl}}/network/health
+
+###
+
+
 ### ============================================
 ### 2. GRAPH UPLOAD - SUCCESS CASES
 ### ============================================
 
-### Upload a valid graph with multiple edges
+### Upload a valid graph with multiple edges (distance and time)
 POST {{baseUrl}}/network/upload
 Content-Type: application/json
 
 {
   "edges": [
-    { "from": "A", "to": "B", "cost": 10 },
-    { "from": "A", "to": "C", "cost": 5 },
-    { "from": "B", "to": "D", "cost": 8 },
-    { "from": "C", "to": "D", "cost": 12 },
-    { "from": "D", "to": "E", "cost": 12 },
-    { "from": "D", "to": "F", "cost": 4 },
-    { "from": "F", "to": "G", "cost": 4 },
-    { "from": "E", "to": "G", "cost": 9 },
-    { "from": "C", "to": "H", "cost": 8 },
-    { "from": "D", "to": "H", "cost": 4 },
-    { "from": "F", "to": "H", "cost": 1 }
+    { "from": "A", "to": "B", "distance": 10, "time": 15 },
+    { "from": "A", "to": "C", "distance": 5, "time": 8 },
+    { "from": "B", "to": "D", "distance": 8, "time": 12 },
+    { "from": "C", "to": "D", "distance": 12, "time": 20 },
+    { "from": "D", "to": "E", "distance": 12, "time": 18 },
+    { "from": "D", "to": "F", "distance": 4, "time": 6 },
+    { "from": "F", "to": "G", "distance": 4, "time": 5 },
+    { "from": "E", "to": "G", "distance": 9, "time": 14 },
+    { "from": "C", "to": "H", "distance": 8, "time": 10 },
+    { "from": "D", "to": "H", "distance": 4, "time": 7 },
+    { "from": "F", "to": "H", "distance": 1, "time": 2 }
   ]
 }
 
@@ -51,11 +57,28 @@ Content-Type: application/json
 
 {
   "edges": [
-    { "from": "X", "to": "Y", "cost": 25 }
+    { "from": "X", "to": "Y", "distance": 25, "time": 30 }
   ]
 }
 
 ###
+
+### Upload a graph optimized for shortest distance
+POST {{baseUrl}}/network/upload
+Content-Type: application/json
+
+{
+  "edges": [
+    { "from": "A", "to": "B", "distance": 100, "time": 60 },
+    { "from": "A", "to": "C", "distance": 50, "time": 120 },
+    { "from": "B", "to": "D", "distance": 50, "time": 30 },
+    { "from": "C", "to": "D", "distance": 100, "time": 20 },
+    { "from": "D", "to": "E", "distance": 80, "time": 45 }
+  ]
+}
+
+###
+
 
 ### ============================================
 ### 3. READ GRAPH - GET NODES
@@ -63,7 +86,7 @@ Content-Type: application/json
 
 ### Get graph by ID (success case)
 ### Note: Replace {graphId} with actual UUID from upload response
-GET {{baseUrl}}/network/nodes/b61765b3-c26c-4950-97b0-6c4ed96ef669
+GET {{baseUrl}}/network/nodes/{{graphId}}
 
 
 ###
@@ -78,6 +101,7 @@ GET {{baseUrl}}/network/nodes/
 
 ###
 
+
 ### ============================================
 ### 4. ERROR HANDLING - VALIDATION TESTS
 ### ============================================
@@ -88,7 +112,7 @@ Content-Type: application/json
 
 {
   "edges": [
-    { "to": "B", "cost": 10 }
+    { "to": "B", "distance": 10, "time": 15 }
   ]
 }
 
@@ -100,43 +124,67 @@ Content-Type: application/json
 
 {
   "edges": [
-    { "from": "A", "cost": 10 }
+    { "from": "A", "distance": 10, "time": 15 }
   ]
 }
 
 ###
 
-### Error: Invalid graph - missing 'cost' field
+### Error: Invalid graph - missing 'distance' field
 POST {{baseUrl}}/network/upload
 Content-Type: application/json
 
 {
   "edges": [
-    { "from": "A", "to": "B" }
+    { "from": "A", "to": "B", "time": 15 }
   ]
 }
 
 ###
 
-### Error: Invalid graph - negative cost
+### Error: Invalid graph - missing 'time' field
 POST {{baseUrl}}/network/upload
 Content-Type: application/json
 
 {
   "edges": [
-    { "from": "A", "to": "B", "cost": -5 }
+    { "from": "A", "to": "B", "distance": 10 }
   ]
 }
 
 ###
 
-### Error: Invalid graph - zero cost
+### Error: Invalid graph - negative distance
 POST {{baseUrl}}/network/upload
 Content-Type: application/json
 
 {
   "edges": [
-    { "from": "A", "to": "B", "cost": 0 }
+    { "from": "A", "to": "B", "distance": -5, "time": 10 }
+  ]
+}
+
+###
+
+### Error: Invalid graph - negative time
+POST {{baseUrl}}/network/upload
+Content-Type: application/json
+
+{
+  "edges": [
+    { "from": "A", "to": "B", "distance": 10, "time": -5 }
+  ]
+}
+
+###
+
+### Error: Invalid graph - zero distance
+POST {{baseUrl}}/network/upload
+Content-Type: application/json
+
+{
+  "edges": [
+    { "from": "A", "to": "B", "distance": 0, "time": 10 }
   ]
 }
 
@@ -158,24 +206,48 @@ Content-Type: application/json
 
 {
   "edges": [
-    { "from": "", "to": "B", "cost": 10 }
+    { "from": "", "to": "B", "distance": 10, "time": 15 }
   ]
 }
 
 ###
 
+
 ### ============================================
-### 4. ROUTE OPTIMIZATION - DIJKSTRA'S ALGORITHM
+### 5. ROUTE OPTIMIZATION - DIJKSTRA'S ALGORITHM
 ### ============================================
 
-### Calculate optimal route (success case)
-### Returns: path array and total cost
+### Calculate optimal route - shortest distance (default)
 POST {{baseUrl}}/route/optimize/{{graphId}}
 Content-Type: application/json
 
 {
   "originNodeId": "A",
-  "destinationNodeId": "H"
+  "destinationNodeId": "D",
+  "preference": "shortest"
+}
+
+###
+
+### Calculate optimal route - fastest time
+POST {{baseUrl}}/route/optimize/{{graphId}}
+Content-Type: application/json
+
+{
+  "originNodeId": "A",
+  "destinationNodeId": "D",
+  "preference": "fastest"
+}
+
+###
+
+### Calculate optimal route - without preference (defaults to shortest)
+POST {{baseUrl}}/route/optimize/{{graphId}}
+Content-Type: application/json
+
+{
+  "originNodeId": "A",
+  "destinationNodeId": "D"
 }
 
 ###
@@ -185,7 +257,7 @@ POST {{baseUrl}}/route/optimize/{{graphId}}
 Content-Type: application/json
 
 {
-  "origin": "A"
+  "originNodeId": "A"
 }
 
 ###
@@ -195,8 +267,20 @@ POST {{baseUrl}}/route/optimize/{{graphId}}
 Content-Type: application/json
 
 {
-  "origin": "A",
-  "destination": "A"
+  "originNodeId": "A",
+  "destinationNodeId": "A"
+}
+
+###
+
+### Error: Route optimization - invalid preference
+POST {{baseUrl}}/route/optimize/{{graphId}}
+Content-Type: application/json
+
+{
+  "originNodeId": "A",
+  "destinationNodeId": "H",
+  "preference": "cheapest"
 }
 
 ###
@@ -206,22 +290,31 @@ POST {{baseUrl}}/route/optimize/00000000-0000-0000-0000-000000000000
 Content-Type: application/json
 
 {
-  "origin": "A",
-  "destination": "H"
+  "originNodeId": "A",
+  "destinationNodeId": "H"
 }
 
 ###
 
-### ============================================
-### 5. PLANNED ENDPOINTS (Future Implementation)
-### ============================================
+### Error: Route optimization - origin node not found in graph
+POST {{baseUrl}}/route/optimize/{{graphId}}
+Content-Type: application/json
 
-### Get all graphs
-GET {{baseUrl}}/network/graphs
+{
+  "originNodeId": "Z",
+  "destinationNodeId": "H"
+}
+
+###
+
+### Error: Route optimization - destination node not found in graph
+POST {{baseUrl}}/route/optimize/{{graphId}}
+Content-Type: application/json
+
+{
+  "originNodeId": "A",
+  "destinationNodeId": "Z"
+}
 
 ###
 
-### Delete graph by ID
-DELETE {{baseUrl}}/network/graphs/{graphId}
-
-###
