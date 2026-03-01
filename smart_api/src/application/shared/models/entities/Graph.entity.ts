@@ -3,7 +3,8 @@ import { z } from 'zod';
 export const NodeSchema = z.object({
   from: z.string().min(1, 'from node cannot be empty'),
   to: z.string().min(1, 'to node cannot be empty'),
-  cost: z.number().positive('cost must be a positive number'),
+  distance: z.number().positive('distance must be a positive number'),
+  time: z.number().positive('time must be a positive number'),
 });
 
 export const GraphSchema = z.object({
