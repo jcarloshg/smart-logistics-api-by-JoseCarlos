@@ -6,6 +6,42 @@ This project is a RESTful API designed to solve a core computer science and logi
 
 This project was specifically designed to target **TypeScript** and modern backend frameworks (e.g., NestJS, Fastify, Hono).
 
+## 💻 Setup Local Development
+
+### Prerequisites
+
+- Docker & Docker Compose
+
+### Steps
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd smart-logistics-api-by-JoseCarlos
+   ```
+
+2. **Copy environment file**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Start all services (API + Database)**
+   ```bash
+   docker compose --file docker-compose.yaml --env-file .env up --build
+   ```
+
+The API will be available at `http://localhost:3001`. Access the Swagger documentation at `http://localhost:3001/docs`.
+
+### Running Tests (locally, outside Docker)
+
+```bash
+cd smart_api
+npm install
+npm test
+```
+
 ## ✨ Key Technical Objectives
 
 Successful completion of this project requires demonstrating proficiency in the following backend domains:
