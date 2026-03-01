@@ -3,6 +3,12 @@ import { GraphType } from '@/application/shared/models/entities/Graph.entity';
 import GraphModel from '../models/Graph.model';
 
 export class GraphRepositoryPostgreSQL extends GraphRepository {
+
+    constructor() {
+        super();
+        console.log(`init: GraphRepositoryPostgreSQL`);
+    }
+
     async create(graph: GraphType): Promise<any> {
         return await GraphModel.create({
             graph: graph
