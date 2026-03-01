@@ -1,5 +1,4 @@
 import { GraphRepository } from '@/application/shared/models/repositories/Graph.repository';
-import { GraphType } from '@/application/shared/models/entities/Graph.entity';
 
 export class ReadGraphApplication {
     private graphRepository: GraphRepository;

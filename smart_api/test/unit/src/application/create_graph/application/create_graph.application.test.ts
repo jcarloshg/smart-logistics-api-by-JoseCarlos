@@ -12,8 +12,8 @@ describe('CreateGraphApplication', () => {
     let consoleSpy: ReturnType<typeof jest.spyOn>;
 
     beforeAll(() => {
-        consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-        jest.spyOn(console, 'log').mockImplementation(() => {});
+        consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+        jest.spyOn(console, 'log').mockImplementation(() => { });
     });
 
     afterAll(() => {
