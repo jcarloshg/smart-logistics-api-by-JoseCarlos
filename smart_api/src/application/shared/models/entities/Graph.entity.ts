@@ -5,6 +5,7 @@ export const NodeSchema = z.object({
   to: z.string().min(1, 'to node cannot be empty'),
   distance: z.number().positive('distance must be a positive number'),
   time: z.number().positive('time must be a positive number'),
+  type: z.enum(['highway', 'road', 'street']).optional().default('road'),
 });
 
 export const GraphSchema = z.object({
