@@ -27,7 +27,7 @@ export class OptimizeRouteApplication {
                 return CustomResponseFactory.badRequest("Validation failed", errors);
             }
 
-            const { originNodeId, destinationNodeId, preference } = validation.data;
+            const { originNodeId, destinationNodeId, preference, constraints } = validation.data;
 
             // ─────────────────────────────────────
             // validate business rules
@@ -56,6 +56,7 @@ export class OptimizeRouteApplication {
                 originNodeId,
                 destinationNodeId,
                 costSelector,
+                constraints,
             );
             const durationMs = Date.now() - startTime;
 
@@ -71,6 +72,7 @@ export class OptimizeRouteApplication {
                 path: result.path,
                 durationMs: durationMs,
                 preference: preference,
+                constraints: constraints,
             };
 
             return CustomResponseFactory.ok("Route optimized successfully", response);
