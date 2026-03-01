@@ -10,7 +10,8 @@ export class GraphRepositoryPostgreSQL extends GraphRepository {
     }
 
     async readById(id: string): Promise<any> {
-        return await GraphModel.findByPk(id);
+        const graph = await GraphModel.findByPk(id);
+        return graph ? graph.get({ plain: true }) : null;
     }
 
     async readAll(): Promise<any[]> {
