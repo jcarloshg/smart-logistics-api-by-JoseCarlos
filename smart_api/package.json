@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "test": "jest",
-    "jest": "jest --watch"
+    "jest": "jest --watchAll"
   },
   "keywords": [],
   "author": "",
