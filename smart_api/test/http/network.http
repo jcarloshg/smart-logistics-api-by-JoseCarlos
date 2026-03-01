@@ -170,7 +170,7 @@ Content-Type: application/json
 
 ### Calculate optimal route (success case)
 ### Returns: path array and total cost
-POST {{baseUrl}}/route/optimize/{{graphId}}
+POST {{baseUrl}}/route/optimize/6ff7efbc-d3a9-4c9a-8a0a-02f0e8760d17
 Content-Type: application/json
 
 {
