@@ -1,4 +1,4 @@
-import { Preference } from "./optimize_route_request.entity";
+import { Preference, RouteConstraints } from "./optimize_route_request.entity";
 
 export interface OptimizeRouteResponse {
     graphId: string;
@@ -6,4 +6,5 @@ export interface OptimizeRouteResponse {
     path: string[];
     durationMs?: number;
     preference?: Preference;
+    constraints?: RouteConstraints;
 }

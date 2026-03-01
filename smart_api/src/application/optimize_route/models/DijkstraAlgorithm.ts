@@ -3,6 +3,7 @@ export interface Edge {
     to: string;
     distance: number;
     time: number;
+    type?: 'highway' | 'road' | 'street';
 }
 
 export interface Graph {
@@ -11,10 +12,22 @@ export interface Graph {
 
 export type CostType = 'distance' | 'time';
 export type CostSelector = (edge: Edge) => number;
+export type ConstraintFilter = (edge: Edge) => number;
+
+export interface RouteConstraints {
+    avoidHighways?: boolean;
+}
 
 export const COST_SELECTORS: Record<CostType, CostSelector> = {
     distance: (edge: Edge) => edge.distance,
     time: (edge: Edge) => edge.time,
+};
+
+export const createConstraintFilter = (constraints?: RouteConstraints): ConstraintFilter => {
+    if (!constraints?.avoidHighways) {
+        return () => 0;
+    }
+    return (edge: Edge) => edge.type === 'highway' ? Infinity : 0;
 };
 
 export interface DijkstraResult {
@@ -23,10 +36,11 @@ export interface DijkstraResult {
 }
 
 export class DijkstraAlgorithm {
-    public execute(graph: Graph, start: string, end: string, costSelector: CostSelector = COST_SELECTORS.distance): DijkstraResult {
+    public execute(graph: Graph, start: string, end: string, costSelector: CostSelector = COST_SELECTORS.distance, constraints?: RouteConstraints): DijkstraResult {
         const { edges } = graph;
 
-        const adjacencyList = this.buildAdjacencyList(edges, costSelector);
+        const constraintFilter = createConstraintFilter(constraints);
+        const adjacencyList = this.buildAdjacencyList(edges, costSelector, constraintFilter);
         const allNodes = this.getAllNodes(edges);
 
         if (!allNodes.has(start) || !allNodes.has(end)) {
@@ -59,12 +73,16 @@ export class DijkstraAlgorithm {
         return { path, totalCost };
     }
 
-    private buildAdjacencyList(edges: Edge[], costSelector: CostSelector): Map<string, Array<{ node: string; cost: number }>> {
+    private buildAdjacencyList(edges: Edge[], costSelector: CostSelector, constraintFilter: ConstraintFilter = () => 0): Map<string, Array<{ node: string; cost: number }>> {
         const adjacencyList = new Map<string, Array<{ node: string; cost: number }>>();
 
         edges.forEach((edge) => {
             if (!adjacencyList.has(edge.from)) {
                 adjacencyList.set(edge.from, []);
+            }
+            const constraintPenalty = constraintFilter(edge);
+            if (constraintPenalty === Infinity) {
+                return;
             }
             adjacencyList.get(edge.from)!.push({
                 node: edge.to,

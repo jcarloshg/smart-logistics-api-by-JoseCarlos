@@ -3,6 +3,7 @@ export interface Edge {
     to: string;
     distance: number;
     time: number;
+    type?: 'highway' | 'road' | 'street';
 }
 
 export interface Graph {
@@ -11,10 +12,22 @@ export interface Graph {
 
 export type CostType = 'distance' | 'time';
 export type CostSelector = (edge: Edge) => number;
+export type ConstraintFilter = (edge: Edge) => number;
+
+export interface RouteConstraints {
+    avoidHighways?: boolean;
+}
 
 export const COST_SELECTORS: Record<CostType, CostSelector> = {
     distance: (edge: Edge) => edge.distance,
     time: (edge: Edge) => edge.time,
+};
+
+export const createConstraintFilter = (constraints?: RouteConstraints): ConstraintFilter => {
+    if (!constraints?.avoidHighways) {
+        return () => 0;
+    }
+    return (edge: Edge) => edge.type === 'highway' ? Infinity : 0;
 };
 
 export interface AStarResult {
@@ -29,10 +42,12 @@ export interface HeuristicFunction {
 export class AStarAlgorithm {
     private heuristic: HeuristicFunction;
     private costSelector: CostSelector;
+    private constraintFilter: ConstraintFilter;
 
-    constructor(heuristic: HeuristicFunction = () => 0, costSelector: CostSelector = COST_SELECTORS.distance) {
+    constructor(heuristic: HeuristicFunction = () => 0, costSelector: CostSelector = COST_SELECTORS.distance, constraintFilter: ConstraintFilter = () => 0) {
         this.heuristic = heuristic;
         this.costSelector = costSelector;
+        this.constraintFilter = constraintFilter;
     }
 
     public execute(graph: Graph, start: string, end: string): AStarResult {
@@ -79,6 +94,9 @@ export class AStarAlgorithm {
         const adjacencyList = new Map<string, Array<{ node: string; cost: number }>>();
 
         edges.forEach((edge) => {
+            if (this.constraintFilter(edge) === Infinity) {
+                return;
+            }
             if (!adjacencyList.has(edge.from)) {
                 adjacencyList.set(edge.from, []);
             }
