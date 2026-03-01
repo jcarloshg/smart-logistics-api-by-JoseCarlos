@@ -25,6 +25,9 @@ export const ReadNodesController = async (req: Request, res: Response) => {
         // ─────────────────────────────────────
         const result = await useCase.execute(id);
 
+        // ─────────────────────────────────────
+        // TODO: update this
+        // ─────────────────────────────────────
         if (result.wasSucces) {
             FactoryResponses.ok(res, result.message, result.data);
         } else if (result.message === 'Graph not found') {
