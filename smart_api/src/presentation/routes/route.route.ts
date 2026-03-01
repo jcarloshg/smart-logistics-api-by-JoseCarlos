@@ -11,8 +11,14 @@ export const RouteRoute = (app: Express) => {
      *     summary: Optimize route using Dijkstra's algorithm
      *     tags: [Route]
      *     description: |
-     *       Finds the optimal path between two nodes in a graph using Dijkstra's algorithm.
-     *       The algorithm calculates the shortest path based on the edge costs (weights).
+     *       Optimize route using Dijkstra's algorithm
+     *       
+     *       Finds the optimal path between two nodes in a graph using Dijkstra's algorithm. The algorithm calculates the shortest path based on the edge costs (weights).
+     *       
+     *       Features:
+     *       - **shortest**: Optimizes based on distance (edge 'distance' property)
+     *       - **fastest**: Optimizes based on time (edge 'time' property)
+     *       - **Constraints**: Option to avoid highways in route calculation
      *     parameters:
      *       - in: path
      *         name: id
